@@ -83,8 +83,7 @@
 				<NcCheckboxRadioSwitch
 					v-model="tosAccepted"
 					type="checkbox">
-					Akceptuję
-					<a href="https://wy.najmuje.eu/baza-wiedzy/regulamin.html" target="_blank">regulamin serwisu</a>
+					Akceptuję <a href="https://wy.najmuje.eu/baza-wiedzy/regulamin.html" target="_blank" class="tos-link">regulamin serwisu</a>
 				</NcCheckboxRadioSwitch>
 
 				<NcButton
@@ -153,5 +152,10 @@ fieldset {
 
 .button-vue--vue-tertiary {
 	box-sizing: border-box;
+}
+
+.tos-link {
+	font-weight: normal;
+	text-decoration: underline;
 }
 </style>

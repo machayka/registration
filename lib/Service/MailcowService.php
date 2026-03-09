@@ -43,13 +43,15 @@ class MailcowService {
 
 		$client = $this->clientService->newClient();
 
+		$this->logger->info('Mailcow createMailbox: local_part=' . $username . ', domain=' . $domain . ', quota=' . $quota);
+
 		try {
 			$response = $client->post(rtrim($apiUrl, '/') . '/add/mailbox', [
 				'headers' => [
 					'X-API-Key' => $apiKey,
 					'Content-Type' => 'application/json',
 				],
-				'json' => [
+				'body' => json_encode([
 					'local_part' => $username,
 					'domain' => $domain,
 					'name' => $displayName ?: $username,
@@ -60,7 +62,7 @@ class MailcowService {
 					'force_pw_update' => '0',
 					'tls_enforce_in' => '0',
 					'tls_enforce_out' => '0',
-				],
+				]),
 			]);
 
 			$statusCode = $response->getStatusCode();

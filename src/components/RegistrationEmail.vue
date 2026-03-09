@@ -11,7 +11,7 @@
 				</NcNoteCard>
 
 				<NcNoteCard v-else type="info">
-					Podaj swój prywatny adres email (np. Gmail). Posłuży do weryfikacji i odzyskiwania hasła.
+					Ten email posłuży do odzyskiwania hasła.
 				</NcNoteCard>
 
 				<NcTextField
