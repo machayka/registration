@@ -16,6 +16,8 @@ use libphonenumber\PhoneNumberUtil;
 use OC\Authentication\Exceptions\PasswordlessTokenException;
 use OC\Authentication\Token\IProvider;
 use OCA\Registration\AppInfo\Application;
+use OCA\Registration\Db\RecoveryEmail;
+use OCA\Registration\Db\RecoveryEmailMapper;
 use OCA\Registration\Db\Registration;
 use OCA\Registration\Db\RegistrationMapper;
 use OCA\Settings\Mailer\NewUserMailHelper;
@@ -56,6 +58,8 @@ class RegistrationService {
 		private ISession $session,
 		private IProvider $tokenProvider,
 		private ICrypto $crypto,
+		private MailcowService $mailcowService,
+		private RecoveryEmailMapper $recoveryEmailMapper,
 	) {
 	}
 
@@ -112,6 +116,12 @@ class RegistrationService {
 				$this->l10n->t('A user has already taken this email, maybe you already have an account?'),
 				$this->l10n->t('You can <a href="%s">log in now</a>.', [$this->urlGenerator->getAbsoluteURL('/')])
 			);
+		}
+
+		// Skip domain restrictions when Mailcow integration is active —
+		// the recovery email can be from any external domain (Gmail, etc.)
+		if ($this->config->getSystemValueString('registration_mailcow_domain', '') !== '') {
+			return;
 		}
 
 		if (empty($this->getAllowedDomains())) {
@@ -305,12 +315,43 @@ class RegistrationService {
 		}
 		$userId = $user->getUID();
 
-
-		// Set user email
+		// Set user email to platform address (login@domain), NOT the recovery email
+		$mailcowDomain = $this->mailcowService->getMailcowDomain();
+		$platformEmail = $loginName . '@' . $mailcowDomain;
 		try {
-			$user->setEMailAddress($registration->getEmail());
+			$user->setEMailAddress($platformEmail);
 		} catch (\Exception $e) {
 			throw new RegistrationException($this->l10n->t('Unable to set user email: ' . $e->getMessage()));
+		}
+
+		// Set quota
+		$user->setQuota('10 GB');
+
+		// Create mailbox on Mailcow server
+		try {
+			$this->mailcowService->createMailbox(
+				$loginName,
+				$password,
+				$fullName ?: $loginName
+			);
+		} catch (RegistrationException $e) {
+			// Rollback: delete the Nextcloud user we just created
+			$this->logger->error('Mailcow mailbox creation failed, rolling back user: ' . $loginName, [
+				'exception' => $e,
+			]);
+			$user->delete();
+			throw new RegistrationException(
+				$this->l10n->t('Unable to create your email account. Please try again or contact the administrator.')
+			);
+		}
+
+		// Save recovery email to permanent table
+		$recoveryEmailAddress = $registration->getEmail();
+		if ($recoveryEmailAddress !== '') {
+			$recoveryEmailEntity = new RecoveryEmail();
+			$recoveryEmailEntity->setUserId($userId);
+			$recoveryEmailEntity->setRecoveryEmail($recoveryEmailAddress);
+			$this->recoveryEmailMapper->insert($recoveryEmailEntity);
 		}
 
 		// Set display name
@@ -338,8 +379,6 @@ class RegistrationService {
 		if ($registeredUserGroup !== 'none') {
 			$group = $this->groupManager->get($registeredUserGroup);
 			if ($group === null) {
-				// This might happen if $registered_user_group is deleted after setting the value
-				// Here I choose to log error instead of stopping the user to register
 				$this->logger->error("You specified newly registered users be added to '$registeredUserGroup' group, but it does not exist.");
 				$groupId = '';
 			} else {

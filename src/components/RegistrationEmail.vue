@@ -10,6 +10,10 @@
 					{{ message }}
 				</NcNoteCard>
 
+				<NcNoteCard v-else type="info">
+					Podaj swój prywatny adres email (np. Gmail). Posłuży do weryfikacji i odzyskiwania hasła.
+				</NcNoteCard>
+
 				<NcTextField
 					name="email"
 					type="email"
@@ -62,8 +66,8 @@ const loginFormLink = loadState<string>('registration', 'loginFormLink')
 
 const emailLabel = computed(() => {
 	return emailIsOptional
-		? t('registration', 'Email (optional)')
-		: t('registration', 'Email')
+		? 'Email do odzyskiwania konta (opcjonalny)'
+		: 'Email do odzyskiwania konta'
 })
 const submitValue = computed(() => {
 	if (emailIsOptional || disableEmailVerification) {

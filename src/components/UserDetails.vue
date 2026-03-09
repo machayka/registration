@@ -19,17 +19,6 @@
 				</NcNoteCard>
 
 				<NcTextField
-					v-if="!emailIsOptional || email.length > 0"
-					v-model="email"
-					type="email"
-					:label="t('registration', 'Email')"
-					:labelVisible="true"
-					name="email"
-					disabled>
-					<Email :size="20" class="input__icon" />
-				</NcTextField>
-
-				<NcTextField
 					v-if="!emailIsLogin"
 					v-model="loginname"
 					type="text"
@@ -45,6 +34,10 @@
 					type="hidden"
 					name="loginname"
 					:value="email">
+
+				<NcNoteCard v-if="loginname.length > 0" type="info">
+					Twój adres email to: <strong>{{ loginname }}@{{ mailcowDomain }}</strong>
+				</NcNoteCard>
 
 				<NcTextField
 					v-if="showFullname"
@@ -87,12 +80,19 @@
 					<Lock :size="20" class="input__icon" />
 				</NcPasswordField>
 
+				<NcCheckboxRadioSwitch
+					v-model="tosAccepted"
+					type="checkbox">
+					Akceptuję
+					<a href="https://wy.najmuje.eu/baza-wiedzy/regulamin.html" target="_blank">regulamin serwisu</a>
+				</NcCheckboxRadioSwitch>
+
 				<NcButton
 					id="submit"
 					type="submit"
 					variant="primary"
 					:wide="true"
-					:disabled="submitting || password.length === 0">
+					:disabled="submitting || password.length === 0 || !tosAccepted">
 					{{ submitting ? t('registration', 'Loading') : t('registration', 'Create account') }}
 				</NcButton>
 			</fieldset>
@@ -105,11 +105,11 @@ import { getRequestToken } from '@nextcloud/auth'
 import { loadState } from '@nextcloud/initial-state'
 import { ref } from 'vue'
 import NcButton from '@nextcloud/vue/components/NcButton'
+import NcCheckboxRadioSwitch from '@nextcloud/vue/components/NcCheckboxRadioSwitch'
 import NcNoteCard from '@nextcloud/vue/components/NcNoteCard'
 import NcPasswordField from '@nextcloud/vue/components/NcPasswordField'
 import NcTextField from '@nextcloud/vue/components/NcTextField'
 import Account from 'vue-material-design-icons/Account.vue'
-import Email from 'vue-material-design-icons/Email.vue'
 import Key from 'vue-material-design-icons/Key.vue'
 import Lock from 'vue-material-design-icons/Lock.vue'
 import Phone from 'vue-material-design-icons/Phone.vue'
@@ -127,8 +127,10 @@ const enforcePhone = loadState<boolean>('registration', 'enforcePhone')
 const message = loadState<string>('registration', 'message')
 const password = ref(loadState<string>('registration', 'password'))
 const additionalHint = loadState<string>('registration', 'additionalHint')
+const mailcowDomain = loadState<string>('registration', 'mailcowDomain')
 const requesttoken = getRequestToken()
 const submitting = ref(false)
+const tosAccepted = ref(false)
 
 /**
  * prevent sending the request twice

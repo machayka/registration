@@ -18,6 +18,7 @@ use OCA\Registration\Events\PassedFormEvent;
 use OCA\Registration\Events\ShowFormEvent;
 use OCA\Registration\Events\ValidateFormEvent;
 use OCA\Registration\Service\LoginFlowService;
+use OCA\Registration\Service\MailcowService;
 use OCA\Registration\Service\MailService;
 use OCA\Registration\Service\RegistrationException;
 use OCA\Registration\Service\RegistrationService;
@@ -44,6 +45,7 @@ class RegisterController extends Controller {
 	private IConfig $config;
 	private RegistrationService $registrationService;
 	private MailService $mailService;
+	private MailcowService $mailcowService;
 	private LoginFlowService $loginFlowService;
 	private IEventDispatcher $eventDispatcher;
 	private IInitialState $initialState;
@@ -57,6 +59,7 @@ class RegisterController extends Controller {
 		RegistrationService $registrationService,
 		LoginFlowService $loginFlowService,
 		MailService $mailService,
+		MailcowService $mailcowService,
 		IEventDispatcher $eventDispatcher,
 		IInitialState $initialState,
 	) {
@@ -67,6 +70,7 @@ class RegisterController extends Controller {
 		$this->registrationService = $registrationService;
 		$this->loginFlowService = $loginFlowService;
 		$this->mailService = $mailService;
+		$this->mailcowService = $mailcowService;
 		$this->eventDispatcher = $eventDispatcher;
 		$this->initialState = $initialState;
 	}
@@ -253,6 +257,7 @@ class RegisterController extends Controller {
 		$this->initialState->provideInitialState('password', $password);
 		$this->initialState->provideInitialState('additionalHint', $additional_hint);
 		$this->initialState->provideInitialState('loginFormLink', $this->urlGenerator->linkToRoute('core.login.showLoginForm'));
+		$this->initialState->provideInitialState('mailcowDomain', $this->mailcowService->getMailcowDomain());
 
 		$response = new TemplateResponse('registration', 'form/user', [], 'guest');
 
