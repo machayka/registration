@@ -63,7 +63,11 @@ class SettingsController extends Controller {
 		?bool $enforce_phone,
 		?bool $domains_is_blocklist,
 		?bool $show_domains,
-		?bool $disable_email_verification): DataResponse {
+		?bool $disable_email_verification,
+		string $mailcow_api_url = '',
+		string $mailcow_api_key = '',
+		string $mailcow_domain = '',
+		string $mailcow_quota = '1024'): DataResponse {
 		// handle domains
 		if (($allowed_domains === '') || ($allowed_domains === null)) {
 			$this->config->deleteAppValue($this->appName, 'allowed_domains');
@@ -109,6 +113,24 @@ class SettingsController extends Controller {
 		$this->config->setAppValue($this->appName, 'domains_is_blocklist', $domains_is_blocklist ? 'yes' : 'no');
 		$this->config->setAppValue($this->appName, 'show_domains', $show_domains ? 'yes' : 'no');
 		$this->config->setAppValue($this->appName, 'disable_email_verification', $disable_email_verification ? 'yes' : 'no');
+
+		// Mailcow settings
+		if ($mailcow_api_url === '') {
+			$this->config->deleteAppValue($this->appName, 'mailcow_api_url');
+		} else {
+			$this->config->setAppValue($this->appName, 'mailcow_api_url', $mailcow_api_url);
+		}
+		if ($mailcow_api_key === '') {
+			$this->config->deleteAppValue($this->appName, 'mailcow_api_key');
+		} else {
+			$this->config->setAppValue($this->appName, 'mailcow_api_key', $mailcow_api_key);
+		}
+		if ($mailcow_domain === '') {
+			$this->config->deleteAppValue($this->appName, 'mailcow_domain');
+		} else {
+			$this->config->setAppValue($this->appName, 'mailcow_domain', $mailcow_domain);
+		}
+		$this->config->setAppValue($this->appName, 'mailcow_quota', $mailcow_quota ?: '1024');
 
 		if ($registered_user_group === null) {
 			$this->config->deleteAppValue($this->appName, 'registered_user_group');

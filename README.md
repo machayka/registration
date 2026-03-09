@@ -32,27 +32,6 @@ Release tarballs are hosted at https://github.com/nextcloud-releases/registratio
 4. User is lead to a form where they can choose their username and password
 5. New account is created and is logged in automatically
 
-## Konfiguracja Mailcow (najmuje.eu)
-
-Po zainstalowaniu aplikacji dodaj do `config.php` na serwerze:
-
-```bash
-sudo nano /var/lib/docker/volumes/nextcloud_aio_nextcloud/_data/config/config.php
-```
-
-```php
-'registration_mailcow_api_url' => 'https://dev.mail.najmuje.eu/api/v1',
-'registration_mailcow_api_key' => 'TWOJ-KLUCZ-API',
-'registration_mailcow_domain' => 'dev.najmuje.eu',
-'registration_mailcow_quota' => 1024,
-```
-
-| Klucz | Opis |
-|-------|------|
-| `registration_mailcow_api_url` | URL do Mailcow API (z `/api/v1`) |
-| `registration_mailcow_api_key` | Klucz API Mailcow (Admin > API) |
-| `registration_mailcow_domain` | Domena skrzynek pocztowych |
-| `registration_mailcow_quota` | Quota skrzynki w MB (1024 = 1 GB) |
 
 ## 🛠️ Development (najmuje.eu)
 

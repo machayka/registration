@@ -23,7 +23,7 @@ class MailcowService {
 	}
 
 	public function getMailcowDomain(): string {
-		return $this->config->getSystemValueString('registration_mailcow_domain', 'najmuje.eu');
+		return $this->config->getAppValue('registration', 'mailcow_domain', '');
 	}
 
 	/**
@@ -32,10 +32,10 @@ class MailcowService {
 	 * @throws RegistrationException
 	 */
 	public function createMailbox(string $username, string $password, string $displayName): void {
-		$apiUrl = $this->config->getSystemValueString('registration_mailcow_api_url', '');
-		$apiKey = $this->config->getSystemValueString('registration_mailcow_api_key', '');
+		$apiUrl = $this->config->getAppValue('registration', 'mailcow_api_url', '');
+		$apiKey = $this->config->getAppValue('registration', 'mailcow_api_key', '');
 		$domain = $this->getMailcowDomain();
-		$quota = $this->config->getSystemValueInt('registration_mailcow_quota', 1024);
+		$quota = (int)$this->config->getAppValue('registration', 'mailcow_quota', '1024');
 
 		if ($apiUrl === '' || $apiKey === '') {
 			throw new RegistrationException('Mailcow API is not configured.');

@@ -96,6 +96,23 @@ class RegistrationSettings implements ISettings {
 			$this->config->getAppValue($this->appName, 'email_verification_hint')
 		);
 
+		$this->initialState->provideInitialState(
+			'mailcow_api_url',
+			$this->config->getAppValue($this->appName, 'mailcow_api_url', '')
+		);
+		$this->initialState->provideInitialState(
+			'mailcow_api_key',
+			$this->config->getAppValue($this->appName, 'mailcow_api_key', '')
+		);
+		$this->initialState->provideInitialState(
+			'mailcow_domain',
+			$this->config->getAppValue($this->appName, 'mailcow_domain', '')
+		);
+		$this->initialState->provideInitialState(
+			'mailcow_quota',
+			$this->config->getAppValue($this->appName, 'mailcow_quota', '1024')
+		);
+
 		Util::addScript('registration', 'registration-settings');
 		Util::addStyle('registration', 'registration-settings');
 

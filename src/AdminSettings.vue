@@ -142,6 +142,37 @@
 			</NcCheckboxRadioSwitch>
 		</NcSettingsSection>
 
+		<NcSettingsSection :name="t('registration', 'Mailcow integration')">
+			<NcTextField
+				v-model="mailcowApiUrl"
+				label="URL API Mailcow"
+				:labelVisible="true"
+				:disabled="loading"
+				placeholder="https://mail.example.com/api/v1"
+				@input="debounceSavingSlow" />
+			<NcTextField
+				v-model="mailcowApiKey"
+				label="Klucz API Mailcow"
+				:labelVisible="true"
+				:disabled="loading"
+				placeholder="Klucz API (Admin > API)"
+				@input="debounceSavingSlow" />
+			<NcTextField
+				v-model="mailcowDomain"
+				label="Domena skrzynek pocztowych"
+				:labelVisible="true"
+				:disabled="loading"
+				placeholder="example.com"
+				@input="debounceSavingSlow" />
+			<NcTextField
+				v-model="mailcowQuota"
+				label="Quota skrzynki (MB)"
+				:labelVisible="true"
+				:disabled="loading"
+				placeholder="1024"
+				@input="debounceSavingSlow" />
+		</NcSettingsSection>
+
 		<NcSettingsSection
 			:name="t('registration', 'User instructions')"
 			:description="t('registration', 'Caution: The user instructions will not be translated and will therefore be displayed as configured below for all users regardless of their actual language.')">
@@ -214,6 +245,10 @@ const showPhone = ref<boolean>(loadState<boolean>('registration', 'show_phone'))
 const enforcePhone = ref<boolean>(loadState<boolean>('registration', 'enforce_phone'))
 const additionalHint = ref(loadState('registration', 'additional_hint'))
 const emailVerificationHint = ref(loadState('registration', 'email_verification_hint'))
+const mailcowApiUrl = ref(loadState('registration', 'mailcow_api_url'))
+const mailcowApiKey = ref(loadState('registration', 'mailcow_api_key'))
+const mailcowDomain = ref(loadState('registration', 'mailcow_domain'))
+const mailcowQuota = ref(loadState('registration', 'mailcow_quota'))
 
 const domainListLabel = computed(() => {
 	if (domainsIsBlocklist.value) {
@@ -260,6 +295,10 @@ async function saveData() {
 			enforce_phone: enforcePhone.value,
 			additional_hint: additionalHint.value,
 			email_verification_hint: emailVerificationHint.value,
+			mailcow_api_url: mailcowApiUrl.value,
+			mailcow_api_key: mailcowApiKey.value,
+			mailcow_domain: mailcowDomain.value,
+			mailcow_quota: mailcowQuota.value,
 		})
 
 		if (response?.data?.status === 'success' && response?.data?.data?.message) {
