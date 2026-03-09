@@ -54,6 +54,31 @@ sudo nano /var/lib/docker/volumes/nextcloud_aio_nextcloud/_data/config/config.ph
 | `registration_mailcow_domain` | Domena skrzynek pocztowych |
 | `registration_mailcow_quota` | Quota skrzynki w MB (1024 = 1 GB) |
 
+## 🛠️ Development (najmuje.eu)
+
+Projekt rozwijany jest bezpośrednio na serwerze deweloperskim, pracując na plikach Nextclouda w kontenerze Docker. Zmiany są widoczne natychmiast po buildzie.
+
+### Build
+
+```bash
+docker run --rm -v /var/lib/docker/volumes/nextcloud_aio_nextcloud/_data/custom_apps/registration:/app -w /app node:20 npm run build 2>&1
+```
+
+### Podgląd zmian
+
+Do obserwowania różnic w repozytorium używamy `tig`:
+
+```bash
+tig
+```
+
+### Workflow
+
+- Praca odbywa się bezpośrednio na serwerze deweloperskim
+- Pliki edytowane są w katalogu `/var/lib/docker/volumes/nextcloud_aio_nextcloud/_data/custom_apps/registration/`
+- Po edycji plików `src/` należy uruchomić build — wygenerowane pliki trafiają do `js/` i `css/`
+- Zmiany są natychmiast widoczne w Nextcloudzie bez restartu
+
 ## FAQ
 
 **Q: A problem occurred sending email, please contact your administrator.**

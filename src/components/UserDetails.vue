@@ -154,8 +154,8 @@ fieldset {
 	box-sizing: border-box;
 }
 
-.tos-link {
-	font-weight: normal;
-	text-decoration: underline;
+:deep(.checkbox-content__icon) {
+	align-self: center;
+	margin-block: 0 !important;
 }
 </style>

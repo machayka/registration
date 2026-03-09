@@ -52,7 +52,7 @@
 				:labelVisible="true"
 				:disabled="loading"
 				placeholder="nextcloud.com;*.example.com"
-				@update:modelValue="debounceSavingSlow" />
+				@input="debounceSavingSlow" />
 
 			<NcCheckboxRadioSwitch
 				v-model="domainsIsBlocklist"
@@ -100,7 +100,7 @@
 						:disabled="loading"
 						placeholder="E.g.: /^[a-z-]+\.[a-z-]+$/"
 						:aria-label="t('registration', 'Regular expression to validate login names')"
-						@update:modelValue="debounceSavingSlow">
+						@input="debounceSavingSlow">
 				</p>
 				<em>{{ t('registration', 'If configured, login names will be validated through the regular expression. If the validation fails the user is prompted with a generic error. Make sure your regex is working correctly.') }}</em>
 			</template>
@@ -153,7 +153,7 @@
 				:disabled="loading"
 				:placeholder="t('registration', `Please create your username following the scheme 'firstname.lastname'.`)"
 				:aria-label="t('registration', 'A short message that is shown to the user in the registration process.')"
-				@update:modelValue="debounceSavingSlow">
+				@input="debounceSavingSlow">
 			<p><em>{{ t('registration', 'Add additional user instructions (e.g. for choosing their login name). If configured the text is displayed in the account creation step of the registration process.') }}</em></p>
 
 			<h3>{{ t('registration', 'Verification email instructions') }}</h3>
@@ -164,7 +164,7 @@
 				:disabled="loading"
 				:placeholder="t('registration', `Please create your username following the scheme 'firstname.lastname'.`)"
 				:aria-label="t('registration', 'A short message that is shown to the user in the verification email.')"
-				@update:modelValue="debounceSavingSlow">
+				@input="debounceSavingSlow">
 			<p><em>{{ t('registration', 'Add additional user instructions (e.g. for choosing their login name). If configured the text is embedded in the verification-email.') }}</em></p>
 		</NcSettingsSection>
 	</div>
