@@ -29,4 +29,11 @@ class RecoveryEmailMapper extends QBMapper {
 
 		return $this->findEntity($query);
 	}
+
+	public function deleteByUserId(string $userId): void {
+		$query = $this->db->getQueryBuilder();
+		$query->delete($this->getTableName())
+			->where($query->expr()->eq('user_id', $query->createNamedParameter($userId)));
+		$query->executeStatement();
+	}
 }

@@ -120,7 +120,7 @@ class RegistrationService {
 
 		// Skip domain restrictions when Mailcow integration is active —
 		// the recovery email can be from any external domain (Gmail, etc.)
-		if ($this->config->getSystemValueString('registration_mailcow_domain', '') !== '') {
+		if ($this->mailcowService->isEnabled()) {
 			return;
 		}
 
@@ -315,34 +315,41 @@ class RegistrationService {
 		}
 		$userId = $user->getUID();
 
-		// Set user email to platform address (login@domain), NOT the recovery email
-		$mailcowDomain = $this->mailcowService->getMailcowDomain();
-		$platformEmail = $loginName . '@' . $mailcowDomain;
-		try {
-			$user->setEMailAddress($platformEmail);
-		} catch (\Exception $e) {
-			throw new RegistrationException($this->l10n->t('Unable to set user email: ' . $e->getMessage()));
-		}
+		if ($this->mailcowService->isEnabled()) {
+			// Set user email to platform address (login@domain), NOT the recovery email
+			$mailcowDomain = $this->mailcowService->getMailcowDomain();
+			$platformEmail = $loginName . '@' . $mailcowDomain;
+			try {
+				$user->setEMailAddress($platformEmail);
+			} catch (\Exception $e) {
+				throw new RegistrationException($this->l10n->t('Unable to set user email: %s', [$e->getMessage()]));
+			}
 
-		// Set quota
-		$user->setQuota('10 GB');
+			// Set quota from Mailcow config
+			$quotaMB = $this->mailcowService->getQuota();
+			$quotaGB = max(1, intdiv($quotaMB, 1024));
+			$user->setQuota($quotaGB . ' GB');
 
-		// Create mailbox on Mailcow server
-		try {
-			$this->mailcowService->createMailbox(
-				$loginName,
-				$password,
-				$fullName ?: $loginName
-			);
-		} catch (RegistrationException $e) {
-			// Rollback: delete the Nextcloud user we just created
-			$this->logger->error('Mailcow mailbox creation failed, rolling back user: ' . $loginName, [
-				'exception' => $e,
-			]);
-			$user->delete();
-			throw new RegistrationException(
-				$this->l10n->t('Unable to create your email account. Please try again or contact the administrator.')
-			);
+			// Create mailbox on Mailcow server
+			try {
+				$this->mailcowService->createMailbox(
+					$loginName,
+					$password,
+					$fullName ?: $loginName
+				);
+			} catch (RegistrationException $e) {
+				// Rollback: delete the Nextcloud user we just created
+				$this->logger->error('Mailcow mailbox creation failed, rolling back user: ' . $loginName, [
+					'exception' => $e,
+				]);
+				$user->delete();
+				throw new RegistrationException(
+					$this->l10n->t('Unable to create your email account. Please try again or contact the administrator.')
+				);
+			}
+		} else {
+			// No Mailcow — use the registration email directly
+			$user->setEMailAddress($registration->getEmail());
 		}
 
 		// Save recovery email to permanent table
