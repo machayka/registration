@@ -64,6 +64,7 @@ class SettingsController extends Controller {
 		?bool $domains_is_blocklist,
 		?bool $show_domains,
 		?bool $disable_email_verification,
+		string $default_user_quota = '10 GB',
 		string $mailcow_api_url = '',
 		string $mailcow_api_key = '',
 		string $mailcow_domain = '',
@@ -113,6 +114,9 @@ class SettingsController extends Controller {
 		$this->config->setAppValue($this->appName, 'domains_is_blocklist', $domains_is_blocklist ? 'yes' : 'no');
 		$this->config->setAppValue($this->appName, 'show_domains', $show_domains ? 'yes' : 'no');
 		$this->config->setAppValue($this->appName, 'disable_email_verification', $disable_email_verification ? 'yes' : 'no');
+
+		// Default user quota
+		$this->config->setAppValue($this->appName, 'default_user_quota', $default_user_quota ?: '10 GB');
 
 		// Mailcow settings
 		if ($mailcow_api_url === '') {

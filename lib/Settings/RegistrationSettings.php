@@ -97,6 +97,11 @@ class RegistrationSettings implements ISettings {
 		);
 
 		$this->initialState->provideInitialState(
+			'default_user_quota',
+			$this->config->getAppValue($this->appName, 'default_user_quota', '10 GB')
+		);
+
+		$this->initialState->provideInitialState(
 			'mailcow_api_url',
 			$this->config->getAppValue($this->appName, 'mailcow_api_url', '')
 		);

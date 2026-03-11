@@ -35,6 +35,22 @@
 					@search="searchGroup"
 					@update:modelValue="saveData" />
 			</div>
+
+			<div class="margin-top">
+				<div>
+					<label for="default_user_quota">
+						{{ t('registration', 'Default storage quota for new users') }}
+					</label>
+				</div>
+				<NcSelect
+					id="default_user_quota"
+					v-model="defaultUserQuota"
+					:options="quotaOptions"
+					:disabled="loading"
+					:clearable="false"
+					label="label"
+					@update:modelValue="saveData" />
+			</div>
 		</NcSettingsSection>
 
 		<NcSettingsSection :name="t('registration', 'Email settings')">
@@ -245,6 +261,15 @@ const showPhone = ref<boolean>(loadState<boolean>('registration', 'show_phone'))
 const enforcePhone = ref<boolean>(loadState<boolean>('registration', 'enforce_phone'))
 const additionalHint = ref(loadState('registration', 'additional_hint'))
 const emailVerificationHint = ref(loadState('registration', 'email_verification_hint'))
+const defaultUserQuotaValue = loadState<string>('registration', 'default_user_quota', '10 GB')
+const quotaOptions = [
+	{ id: '1 GB', label: '1 GB' },
+	{ id: '5 GB', label: '5 GB' },
+	{ id: '10 GB', label: '10 GB' },
+	{ id: 'none', label: t('registration', 'Unlimited') },
+]
+const defaultUserQuota = ref(quotaOptions.find(o => o.id === defaultUserQuotaValue))
+
 const mailcowApiUrl = ref(loadState('registration', 'mailcow_api_url'))
 const mailcowApiKey = ref(loadState('registration', 'mailcow_api_key'))
 const mailcowDomain = ref(loadState('registration', 'mailcow_domain'))
@@ -295,6 +320,7 @@ async function saveData() {
 			enforce_phone: enforcePhone.value,
 			additional_hint: additionalHint.value,
 			email_verification_hint: emailVerificationHint.value,
+			default_user_quota: defaultUserQuota.value?.id || '10 GB',
 			mailcow_api_url: mailcowApiUrl.value,
 			mailcow_api_key: mailcowApiKey.value,
 			mailcow_domain: mailcowDomain.value,

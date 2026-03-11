@@ -315,6 +315,12 @@ class RegistrationService {
 		}
 		$userId = $user->getUID();
 
+		// Set quota
+		$quota = $this->config->getAppValue($this->appName, 'default_user_quota', '10 GB');
+		if ($quota !== 'none') {
+			$user->setQuota($quota);
+		}
+
 		if ($this->mailcowService->isEnabled()) {
 			// Set user email to platform address (login@domain), NOT the recovery email
 			$mailcowDomain = $this->mailcowService->getMailcowDomain();
@@ -324,11 +330,6 @@ class RegistrationService {
 			} catch (\Exception $e) {
 				throw new RegistrationException($this->l10n->t('Unable to set user email: %s', [$e->getMessage()]));
 			}
-
-			// Set quota from Mailcow config
-			$quotaMB = $this->mailcowService->getQuota();
-			$quotaGB = max(1, intdiv($quotaMB, 1024));
-			$user->setQuota($quotaGB . ' GB');
 
 			// Create mailbox on Mailcow server
 			try {
