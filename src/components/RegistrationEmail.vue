@@ -62,8 +62,8 @@ const loginFormLink = loadState<string>('registration', 'loginFormLink')
 
 const emailLabel = computed(() => {
 	return emailIsOptional
-		? 'Email do odzyskiwania konta (opcjonalny)'
-		: 'Email do odzyskiwania konta'
+		? t('registration', 'Email (optional)')
+		: t('registration', 'Email')
 })
 const submitValue = computed(() => {
 	if (emailIsOptional || disableEmailVerification) {
