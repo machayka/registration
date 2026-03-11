@@ -36,7 +36,7 @@
 					:value="email">
 
 				<NcNoteCard v-if="loginname.length > 0" type="info">
-					Twój adres email to: <strong>{{ loginname }}@{{ mailcowDomain }}</strong>
+					{{ t('registration', 'Your new email is:') }} <strong>{{ loginname }}@{{ mailcowDomain }}</strong>
 				</NcNoteCard>
 
 				<NcTextField
@@ -83,7 +83,7 @@
 				<NcCheckboxRadioSwitch
 					v-model="tosAccepted"
 					type="checkbox">
-					Akceptuję <a href="https://wy.najmuje.eu/baza-wiedzy/regulamin.html" target="_blank" class="tos-link">regulamin serwisu</a>
+					{{ t('registration', 'I accept the') }} <a href="https://wy.najmuje.eu/baza-wiedzy/regulamin.html" target="_blank" class="tos-link">{{ t('registration', 'terms of service') }}</a>
 				</NcCheckboxRadioSwitch>
 
 				<NcButton

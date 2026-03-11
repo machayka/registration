@@ -10,10 +10,6 @@
 					{{ message }}
 				</NcNoteCard>
 
-				<NcNoteCard v-else type="info">
-					Ten email posłuży do odzyskiwania hasła.
-				</NcNoteCard>
-
 				<NcTextField
 					name="email"
 					type="email"

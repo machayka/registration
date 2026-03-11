@@ -2,7 +2,7 @@
 	<div class="guest-box">
 		<form action="" method="post">
 			<fieldset>
-				<h2>Odzyskiwanie konta</h2>
+				<h2>{{ t('registration', 'Account recovery') }}</h2>
 
 				<NcNoteCard v-if="message !== ''" type="error">
 					{{ message }}
@@ -11,7 +11,7 @@
 				<NcTextField
 					name="login"
 					type="text"
-					label="Login"
+					:label="t('registration', 'Login')"
 					:labelVisible="true"
 					required
 					modelValue=""
@@ -25,14 +25,14 @@
 					type="submit"
 					variant="primary"
 					:wide="true">
-					Dalej
+					{{ t('registration', 'Next') }}
 				</NcButton>
 
 				<NcButton
 					variant="tertiary"
 					:href="loginFormLink"
 					:wide="true">
-					Wróć do logowania
+					{{ t('registration', 'Back to login') }}
 				</NcButton>
 			</fieldset>
 		</form>
@@ -42,6 +42,7 @@
 <script lang="ts" setup>
 import { getRequestToken } from '@nextcloud/auth'
 import { loadState } from '@nextcloud/initial-state'
+import { t } from '@nextcloud/l10n'
 import NcButton from '@nextcloud/vue/components/NcButton'
 import NcNoteCard from '@nextcloud/vue/components/NcNoteCard'
 import NcTextField from '@nextcloud/vue/components/NcTextField'

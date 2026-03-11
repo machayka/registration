@@ -9,7 +9,7 @@
 				variant="primary"
 				:href="loginFormLink"
 				:wide="true">
-				Wróć do logowania
+				{{ t('registration', 'Back to login') }}
 			</NcButton>
 		</fieldset>
 	</div>
@@ -17,6 +17,7 @@
 
 <script lang="ts" setup>
 import { loadState } from '@nextcloud/initial-state'
+import { t } from '@nextcloud/l10n'
 import NcButton from '@nextcloud/vue/components/NcButton'
 import NcNoteCard from '@nextcloud/vue/components/NcNoteCard'
 

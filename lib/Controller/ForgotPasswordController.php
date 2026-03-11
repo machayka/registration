@@ -13,6 +13,7 @@ use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Services\IInitialState;
 use OCP\Defaults;
 use OCP\IRequest;
+use OCP\IL10N;
 use OCP\IURLGenerator;
 use OCP\IUserManager;
 use OCP\Mail\IMailer;
@@ -29,6 +30,7 @@ class ForgotPasswordController extends Controller {
 		private ResetTokenMapper $resetTokenMapper,
 		private IUserManager $userManager,
 		private IURLGenerator $urlGenerator,
+		private IL10N $l10n,
 		private IMailer $mailer,
 		private Defaults $defaults,
 		private IInitialState $initialState,
@@ -52,7 +54,7 @@ class ForgotPasswordController extends Controller {
 	 */
 	public function submitForm(string $login): TemplateResponse {
 		// Always show success message to prevent user enumeration
-		$successMessage = 'Wysłaliśmy wiadomość z linkiem do zmiany hasła na adres email podany przy rejestracji.';
+		$successMessage = $this->l10n->t('We sent a message to the email address provided during registration.');
 
 		try {
 			$recoveryEmail = $this->recoveryEmailMapper->findByUserId($login);
@@ -87,12 +89,12 @@ class ForgotPasswordController extends Controller {
 			'link' => $resetLink,
 			'sitename' => $this->defaults->getName(),
 		]);
-		$template->setSubject('Resetowanie hasła – ' . $this->defaults->getName());
+		$template->setSubject($this->l10n->t('Password reset') . ' – ' . $this->defaults->getName());
 		$template->addHeader();
-		$template->addHeading('Resetowanie hasła');
-		$template->addBodyText('Ktoś poprosił o zresetowanie hasła do Twojego konta. Jeśli to nie Ty – zignoruj tę wiadomość.');
-		$template->addBodyButton('Ustaw nowe hasło', $resetLink);
-		$template->addBodyText('Link jest ważny przez 1 godzinę.');
+		$template->addHeading($this->l10n->t('Password reset'));
+		$template->addBodyText($this->l10n->t('Someone requested a password reset for your account. If it was not you – ignore this message.'));
+		$template->addBodyButton($this->l10n->t('Set new password'), $resetLink);
+		$template->addBodyText($this->l10n->t('The link is valid for 1 hour.'));
 		$template->addFooter();
 
 		$from = Util::getDefaultEmailAddress('noreply');
@@ -119,14 +121,14 @@ class ForgotPasswordController extends Controller {
 		try {
 			$entity = $this->resetTokenMapper->findByTokenHash(hash('sha256', $token));
 		} catch (DoesNotExistException $e) {
-			$this->initialState->provideInitialState('forgotMessage', 'Link jest nieprawidłowy lub wygasł.');
+			$this->initialState->provideInitialState('forgotMessage', $this->l10n->t('The link is invalid or has expired.'));
 			$this->initialState->provideInitialState('loginFormLink', $this->urlGenerator->linkToRoute('core.login.showLoginForm'));
 			return new TemplateResponse('registration', 'forgot/form', [], 'guest');
 		}
 
 		if ($entity->getCreatedAt() < time() - self::TOKEN_LIFETIME) {
 			$this->resetTokenMapper->deleteByUserId($entity->getUserId());
-			$this->initialState->provideInitialState('forgotMessage', 'Link wygasł. Spróbuj ponownie.');
+			$this->initialState->provideInitialState('forgotMessage', $this->l10n->t('The link has expired. Please try again.'));
 			$this->initialState->provideInitialState('loginFormLink', $this->urlGenerator->linkToRoute('core.login.showLoginForm'));
 			return new TemplateResponse('registration', 'forgot/form', [], 'guest');
 		}
@@ -145,27 +147,27 @@ class ForgotPasswordController extends Controller {
 		try {
 			$entity = $this->resetTokenMapper->findByTokenHash(hash('sha256', $token));
 		} catch (DoesNotExistException $e) {
-			return $this->showReset($token, 'Link jest nieprawidłowy lub wygasł.');
+			return $this->showReset($token, $this->l10n->t('The link is invalid or has expired.'));
 		}
 
 		if ($entity->getCreatedAt() < time() - self::TOKEN_LIFETIME) {
 			$this->resetTokenMapper->deleteByUserId($entity->getUserId());
-			return $this->showReset($token, 'Link wygasł.');
+			return $this->showReset($token, $this->l10n->t('The link has expired.'));
 		}
 
 		$user = $this->userManager->get($entity->getUserId());
 		if ($user === null) {
-			return $this->showReset($token, 'Nie znaleziono użytkownika.');
+			return $this->showReset($token, $this->l10n->t('User not found.'));
 		}
 
 		if (!$user->setPassword($password)) {
-			return $this->showReset($token, 'Nie udało się ustawić hasła. Spróbuj ponownie.');
+			return $this->showReset($token, $this->l10n->t('Failed to set password. Please try again.'));
 		}
 
 		// Clean up
 		$this->resetTokenMapper->deleteByUserId($entity->getUserId());
 
-		$this->initialState->provideInitialState('forgotSentMessage', 'Hasło zostało zmienione. Możesz się teraz zalogować.');
+		$this->initialState->provideInitialState('forgotSentMessage', $this->l10n->t('Password has been changed. You can now log in.'));
 		$this->initialState->provideInitialState('loginFormLink', $this->urlGenerator->linkToRoute('core.login.showLoginForm'));
 		return new TemplateResponse('registration', 'forgot/sent', [], 'guest');
 	}

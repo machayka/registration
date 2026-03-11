@@ -2,7 +2,7 @@
 	<div class="guest-box">
 		<form action="" method="post">
 			<fieldset>
-				<h2>Ustaw nowe hasło</h2>
+				<h2>{{ t('registration', 'Set new password') }}</h2>
 
 				<NcNoteCard v-if="message !== ''" type="error">
 					{{ message }}
@@ -10,7 +10,7 @@
 
 				<NcPasswordField
 					v-model="password"
-					label="Nowe hasło"
+					:label="t('registration', 'New password')"
 					:labelVisible="true"
 					name="password"
 					required>
@@ -19,7 +19,7 @@
 
 				<NcPasswordField
 					v-model="passwordConfirm"
-					label="Potwierdź hasło"
+					:label="t('registration', 'Confirm password')"
 					:labelVisible="true"
 					name="password_confirm"
 					required>
@@ -34,11 +34,11 @@
 					variant="primary"
 					:wide="true"
 					:disabled="password.length === 0 || password !== passwordConfirm">
-					Zapisz
+					{{ t('registration', 'Save') }}
 				</NcButton>
 
 				<p v-if="password !== '' && passwordConfirm !== '' && password !== passwordConfirm" class="error-text">
-					Hasła nie są takie same.
+					{{ t('registration', 'Passwords do not match.') }}
 				</p>
 			</fieldset>
 		</form>
@@ -48,6 +48,7 @@
 <script lang="ts" setup>
 import { getRequestToken } from '@nextcloud/auth'
 import { loadState } from '@nextcloud/initial-state'
+import { t } from '@nextcloud/l10n'
 import { ref } from 'vue'
 import NcButton from '@nextcloud/vue/components/NcButton'
 import NcNoteCard from '@nextcloud/vue/components/NcNoteCard'
