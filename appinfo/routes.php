@@ -15,5 +15,9 @@ return [
 		['name' => 'register#submitVerificationForm', 'url' => '/verify/{secret}', 'verb' => 'POST'],
 		['name' => 'register#showUserForm', 'url' => '/register/{secret}/{token}', 'verb' => 'GET'],
 		['name' => 'register#submitUserForm', 'url' => '/register/{secret}/{token}', 'verb' => 'POST'],
+		['name' => 'forgotPassword#showForm', 'url' => '/forgot', 'verb' => 'GET'],
+		['name' => 'forgotPassword#submitForm', 'url' => '/forgot', 'verb' => 'POST'],
+		['name' => 'forgotPassword#showReset', 'url' => '/forgot/reset/{token}', 'verb' => 'GET'],
+		['name' => 'forgotPassword#submitReset', 'url' => '/forgot/reset/{token}', 'verb' => 'POST'],
 	],
 ];
