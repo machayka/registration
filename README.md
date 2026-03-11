@@ -12,17 +12,26 @@ This app allows users to register a new account.
 
 ## 🚢 Installation
 
-The app is distributed through the [app store](https://apps.nextcloud.com/apps/registration) and you can install it [right from your Nextcloud installation](https://docs.nextcloud.com/server/latest/admin_manual/apps_management.html).
+```bash
+# Wejdź do kontenera Nextcloud
+docker exec -it nextcloud-aio-nextcloud bash
 
-Release tarballs are hosted at https://github.com/nextcloud-releases/registration/releases.
+# Przejdź do katalogu custom_apps
+cd /var/www/html/custom_apps
+
+# Sklonuj repo
+git clone https://github.com/machayka/registration.git
+
+# Włącz aplikację
+php /var/www/html/occ app:enable registration
+```
 
 ## ✨ Features
 
-* 👥 Add users to a given group
-* 🛃 Allow-list with email domains (including wildcard) to register with
 * 🔔 Administrator will be notified via email for new user creation or require approval
 * 📱 Supports Nextcloud's Client [Login Flow v1 and v2](https://docs.nextcloud.com/server/stable/developer_manual/client_apis/LoginFlow/index.html) - allowing registration in the mobile Apps and Desktop clients
 * 📜 Integrates with [Terms of service](https://apps.nextcloud.com/apps/terms_of_service)
+* 🔑 Forgot password – users can reset their password via email
 
 ## 🔁 Web form registration flow
 
