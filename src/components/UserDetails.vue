@@ -19,6 +19,22 @@
 				</NcNoteCard>
 
 				<NcTextField
+					v-if="showFullname"
+					v-model="fullname"
+					type="text"
+					name="fullname"
+					:label="t('registration', 'Full name')"
+					:labelVisible="true"
+					:required="enforceFullname">
+					<Account :size="20" class="input__icon" />
+				</NcTextField>
+				<input
+					v-else
+					type="hidden"
+					name="fullname"
+					value="">
+
+				<NcTextField
 					v-if="!emailIsLogin"
 					v-model="loginname"
 					type="text"
@@ -38,22 +54,6 @@
 				<NcNoteCard v-if="loginname.length > 0" type="info">
 					{{ t('registration', 'Your new email is:') }} <strong>{{ loginname }}@{{ mailcowDomain }}</strong>
 				</NcNoteCard>
-
-				<NcTextField
-					v-if="showFullname"
-					v-model="fullname"
-					type="text"
-					name="fullname"
-					:label="t('registration', 'Full name')"
-					:labelVisible="true"
-					:required="enforceFullname">
-					<Account :size="20" class="input__icon" />
-				</NcTextField>
-				<input
-					v-else
-					type="hidden"
-					name="fullname"
-					value="">
 
 				<NcTextField
 					v-if="showPhone"
@@ -102,7 +102,7 @@
 <script lang="ts" setup>
 import { getRequestToken } from '@nextcloud/auth'
 import { loadState } from '@nextcloud/initial-state'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import NcButton from '@nextcloud/vue/components/NcButton'
 import NcCheckboxRadioSwitch from '@nextcloud/vue/components/NcCheckboxRadioSwitch'
 import NcNoteCard from '@nextcloud/vue/components/NcNoteCard'
@@ -130,6 +130,20 @@ const mailcowDomain = loadState<string>('registration', 'mailcowDomain')
 const requesttoken = getRequestToken()
 const submitting = ref(false)
 const tosAccepted = ref(false)
+
+function toLogin(name: string): string {
+	return name
+		.normalize('NFD')
+		.replace(/[\u0300-\u036f]/g, '')
+		.replace(/\u0142/g, 'l')
+		.replace(/\u0141/g, 'L')
+		.toLowerCase()
+		.replace(/[^a-z0-9]/g, '')
+}
+
+watch(fullname, (val) => {
+	loginname.value = toLogin(val)
+})
 
 /**
  * prevent sending the request twice
