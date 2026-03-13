@@ -91,7 +91,7 @@
 					type="submit"
 					variant="primary"
 					:wide="true"
-					:disabled="submitting || password.length === 0 || !tosAccepted">
+					:disabled="submitting || password.length === 0 || !tosAccepted || (enforceFullname && fullname.length === 0)">
 					{{ submitting ? t('registration', 'Loading') : t('registration', 'Create account') }}
 				</NcButton>
 			</fieldset>
