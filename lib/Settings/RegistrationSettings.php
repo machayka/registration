@@ -12,8 +12,6 @@ use OCA\Registration\AppInfo\Application;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Services\IInitialState;
 use OCP\IConfig;
-use OCP\IGroup;
-use OCP\IGroupManager;
 use OCP\Settings\ISettings;
 use OCP\Util;
 
@@ -22,17 +20,11 @@ class RegistrationSettings implements ISettings {
 	public function __construct(
 		protected string $appName,
 		private IConfig $config,
-		private IGroupManager $groupManager,
 		private IInitialState $initialState,
 	) {
 	}
 
 	public function getForm(): TemplateResponse {
-		$this->initialState->provideInitialState(
-			'registered_user_group',
-			$this->getGroupDetailArray($this->config->getAppValue($this->appName, 'registered_user_group', 'none'))
-		);
-
 		$this->initialState->provideInitialState(
 			'admin_approval_required',
 			$this->config->getAppValue($this->appName, 'admin_approval_required', 'no') === 'yes'
@@ -132,15 +124,4 @@ class RegistrationSettings implements ISettings {
 		return 50;
 	}
 
-	protected function getGroupDetailArray(string $gid): array {
-		$group = $this->groupManager->get($gid);
-		if ($group instanceof IGroup) {
-			return [
-				'id' => $group->getGID(),
-				'displayname' => $group->getDisplayName(),
-			];
-		}
-
-		return [];
-	}
 }

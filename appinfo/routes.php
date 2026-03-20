@@ -11,6 +11,8 @@ return [
 		['name' => 'settings#admin', 'url' => '/settings', 'verb' => 'POST'],
 		['name' => 'register#showEmailForm', 'url' => '/', 'verb' => 'GET'],
 		['name' => 'register#submitEmailForm', 'url' => '/', 'verb' => 'POST'],
+		['name' => 'register#showEmailFormWithGroup', 'url' => '/group/{groupId}', 'verb' => 'GET'],
+		['name' => 'register#submitEmailFormWithGroup', 'url' => '/group/{groupId}', 'verb' => 'POST'],
 		['name' => 'register#showVerificationForm', 'url' => '/verify/{secret}', 'verb' => 'GET'],
 		['name' => 'register#submitVerificationForm', 'url' => '/verify/{secret}', 'verb' => 'POST'],
 		['name' => 'register#showUserForm', 'url' => '/register/{secret}/{token}', 'verb' => 'GET'],

@@ -27,6 +27,8 @@ use OCP\AppFramework\Db\Entity;
  * @method void setClientSecret(string $clientSecret)
  * @method string getRequested()
  * @method void setRequested(string $requested)
+ * @method string|null getGroupId()
+ * @method void setGroupId(?string $groupId)
  */
 class Registration extends Entity {
 	public $id;
@@ -38,6 +40,7 @@ class Registration extends Entity {
 	protected $requested;
 	protected $emailConfirmed;
 	protected $clientSecret;
+	protected $groupId;
 
 	public function __construct() {
 		$this->addType('email', 'string');
@@ -48,5 +51,6 @@ class Registration extends Entity {
 		$this->addType('token', 'string');
 		$this->addType('clientSecret', 'string');
 		$this->addType('requested', 'datetime');
+		$this->addType('groupId', 'string');
 	}
 }

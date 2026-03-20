@@ -34,6 +34,7 @@ use OCP\AppFramework\Services\IInitialState;
 use OCP\EventDispatcher\IEventDispatcher;
 use OCP\HintException;
 use OCP\IConfig;
+use OCP\IGroupManager;
 use OCP\IL10N;
 use OCP\IRequest;
 use OCP\IURLGenerator;
@@ -49,6 +50,7 @@ class RegisterController extends Controller {
 	private LoginFlowService $loginFlowService;
 	private IEventDispatcher $eventDispatcher;
 	private IInitialState $initialState;
+	private IGroupManager $groupManager;
 
 	public function __construct(
 		string $appName,
@@ -62,6 +64,7 @@ class RegisterController extends Controller {
 		MailcowService $mailcowService,
 		IEventDispatcher $eventDispatcher,
 		IInitialState $initialState,
+		IGroupManager $groupManager,
 	) {
 		parent::__construct($appName, $request);
 		$this->l10n = $l10n;
@@ -73,6 +76,7 @@ class RegisterController extends Controller {
 		$this->mailcowService = $mailcowService;
 		$this->eventDispatcher = $eventDispatcher;
 		$this->initialState = $initialState;
+		$this->groupManager = $groupManager;
 	}
 
 	/**
@@ -109,10 +113,43 @@ class RegisterController extends Controller {
 	}
 
 	/**
+	 * @NoCSRFRequired
+	 * @PublicPage
+	 */
+	public function showEmailFormWithGroup(string $groupId, string $email = '', string $message = ''): TemplateResponse {
+		$group = $this->groupManager->get($groupId);
+		if ($group === null) {
+			$groupMessage = $this->l10n->t(
+				'The group "%s" does not exist or the registration link has changed. You can continue registration without being assigned to a group.',
+				[$groupId]
+			);
+			if ($message !== '') {
+				$message = $groupMessage . ' ' . $message;
+			} else {
+				$message = $groupMessage;
+			}
+			return $this->showEmailForm($email, $message);
+		}
+
+		$this->initialState->provideInitialState('groupId', $groupId);
+		return $this->showEmailForm($email, $message);
+	}
+
+	/**
 	 * @PublicPage
 	 * @AnonRateThrottle(limit=5, period=300)
 	 */
-	public function submitEmailForm(string $email): Response {
+	public function submitEmailFormWithGroup(string $groupId, string $email): Response {
+		$group = $this->groupManager->get($groupId);
+		$validGroupId = $group !== null ? $groupId : null;
+		return $this->submitEmailForm($email, $validGroupId);
+	}
+
+	/**
+	 * @PublicPage
+	 * @AnonRateThrottle(limit=5, period=300)
+	 */
+	public function submitEmailForm(string $email, ?string $groupId = null): Response {
 		$validateFormEvent = new ValidateFormEvent(ValidateFormEvent::STEP_EMAIL);
 		$this->eventDispatcher->dispatchTyped($validateFormEvent);
 
@@ -123,6 +160,7 @@ class RegisterController extends Controller {
 		try {
 			// Registration already in progress, update token and continue with verification
 			$registration = $this->registrationService->getRegistrationForEmail($email);
+			$registration->setGroupId($groupId);
 			$this->registrationService->generateNewToken($registration);
 		} catch (DoesNotExistException $e) {
 			// No registration in progress
@@ -133,7 +171,7 @@ class RegisterController extends Controller {
 				return $this->showEmailForm($email, $e->getMessage());
 			}
 
-			$registration = $this->registrationService->createRegistration($email);
+			$registration = $this->registrationService->createRegistration($email, '', '', '', $groupId);
 		}
 
 		if ($this->config->getAppValue($this->appName, 'disable_email_verification', 'no') === 'yes') {

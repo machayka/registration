@@ -15,27 +15,6 @@
 
 			<p><em>{{ t('registration', 'Enabling "administrator approval" will prevent registrations from mobile and desktop clients to complete as the credentials cannot be verified by the client until the user was enabled.') }}</em></p>
 
-			<div>
-				<div class="margin-top">
-					<label for="registered_user_group">
-						{{ t('registration', 'Registered users default group') }}
-					</label>
-				</div>
-				<NcSelect
-					id="registered_user_group"
-					v-model="registeredUserGroup"
-					:placeholder="t('registration', 'Select group')"
-					:options="groups"
-					:disabled="loading"
-					:searchable="true"
-					:tagWidth="60"
-					:loading="loadingGroups"
-					:closeOnSelect="false"
-					label="displayname"
-					@search="searchGroup"
-					@update:modelValue="saveData" />
-			</div>
-
 			<div class="margin-top">
 				<div>
 					<label for="default_user_quota">
@@ -222,9 +201,9 @@ import axios from '@nextcloud/axios'
 import { showError, showSuccess } from '@nextcloud/dialogs'
 import { loadState } from '@nextcloud/initial-state'
 import { t } from '@nextcloud/l10n'
-import { generateOcsUrl, generateUrl } from '@nextcloud/router'
+import { generateUrl } from '@nextcloud/router'
 import debounce from 'debounce'
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref } from 'vue'
 import NcCheckboxRadioSwitch from '@nextcloud/vue/components/NcCheckboxRadioSwitch'
 import NcSelect from '@nextcloud/vue/components/NcSelect'
 import NcSettingsSection from '@nextcloud/vue/components/NcSettingsSection'
@@ -233,21 +212,9 @@ import NcTextField from '@nextcloud/vue/components/NcTextField'
 // Styles
 import '@nextcloud/dialogs/style.css'
 
-type Group = {
-	id: string
-	displayname: string
-	usercount: number
-	disabled: number
-	canAdd: boolean
-	canRemove: boolean
-}
-
 const loading = ref(false)
-const loadingGroups = ref(false)
-const groups = ref<Group[]>([])
 const saveNotification = ref<unknown>(null)
 const adminApproval = ref<boolean>(loadState<boolean>('registration', 'admin_approval_required'))
-const registeredUserGroup = ref<Group>(loadState<Group>('registration', 'registered_user_group'))
 const allowedDomains = ref<string>(loadState<string>('registration', 'allowed_domains'))
 const domainsIsBlocklist = ref<boolean>(loadState<boolean>('registration', 'domains_is_blocklist'))
 const showDomains = ref<boolean>(loadState<boolean>('registration', 'show_domains'))
@@ -306,7 +273,6 @@ async function saveData() {
 	try {
 		const response = await axios.post(generateUrl('/apps/registration/settings'), {
 			admin_approval_required: adminApproval.value,
-			registered_user_group: registeredUserGroup.value?.id,
 			allowed_domains: allowedDomains.value,
 			domains_is_blocklist: domainsIsBlocklist.value,
 			show_domains: showDomains.value,
@@ -346,29 +312,6 @@ async function saveData() {
 	loading.value = false
 }
 
-const searchGroup = debounce(async function(query) {
-	loadingGroups.value = true
-	try {
-		const response = await axios.get(generateOcsUrl('cloud/groups/details'), {
-			params: {
-				search: query,
-				limit: 20,
-				offset: 0,
-			},
-		})
-		groups.value = response.data.ocs.data.groups.sort(function(a: Group, b: Group) {
-			return a.displayname.localeCompare(b.displayname)
-		})
-	} catch (err) {
-		console.error('Could not fetch groups', err)
-	} finally {
-		loadingGroups.value = false
-	}
-}, 500)
-
-onMounted(() => {
-	searchGroup('')
-})
 </script>
 
 <style scoped lang="scss">

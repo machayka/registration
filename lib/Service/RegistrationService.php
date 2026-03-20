@@ -76,11 +76,12 @@ class RegistrationService {
 	/**
 	 * Create registration request, used by both the API and form
 	 */
-	public function createRegistration(string $email, string $username = '', string $password = '', string $displayname = ''): Registration {
+	public function createRegistration(string $email, string $username = '', string $password = '', string $displayname = '', ?string $groupId = null): Registration {
 		$registration = new Registration();
 		$registration->setEmail($email);
 		$registration->setUsername($username);
 		$registration->setDisplayname($displayname);
+		$registration->setGroupId($groupId);
 		if ($password !== '') {
 			$password = $this->crypto->encrypt($password);
 			$registration->setPassword($password);
@@ -382,16 +383,16 @@ class RegistrationService {
 			$this->accountManager->updateAccount($account);
 		}
 
-		// Add user to group
-		$registeredUserGroup = $this->config->getAppValue($this->appName, 'registered_user_group', 'none');
-		if ($registeredUserGroup !== 'none') {
-			$group = $this->groupManager->get($registeredUserGroup);
-			if ($group === null) {
-				$this->logger->error("You specified newly registered users be added to '$registeredUserGroup' group, but it does not exist.");
-				$groupId = '';
-			} else {
+		// Add user to group from registration link
+		$registrationGroupId = $registration->getGroupId();
+		if ($registrationGroupId !== null && $registrationGroupId !== '') {
+			$group = $this->groupManager->get($registrationGroupId);
+			if ($group !== null) {
 				$group->addUser($user);
 				$groupId = $group->getGID();
+			} else {
+				$this->logger->error("Registration link specified group '$registrationGroupId', but it does not exist.");
+				$groupId = '';
 			}
 		} else {
 			$groupId = '';

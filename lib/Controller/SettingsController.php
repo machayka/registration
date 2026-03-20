@@ -13,8 +13,6 @@ use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\IConfig;
-use OCP\IGroup;
-use OCP\IGroupManager;
 use OCP\IL10N;
 use OCP\IRequest;
 
@@ -22,22 +20,19 @@ class SettingsController extends Controller {
 
 	private IL10N $l10n;
 	private IConfig $config;
-	private IGroupManager $groupmanager;
 	/** @var string */
 	protected $appName;
 
-	public function __construct($appName, IRequest $request, IL10N $l10n, IConfig $config, IGroupManager $groupmanager) {
+	public function __construct($appName, IRequest $request, IL10N $l10n, IConfig $config) {
 		parent::__construct($appName, $request);
 		$this->l10n = $l10n;
 		$this->config = $config;
-		$this->groupmanager = $groupmanager;
 		$this->appName = $appName;
 	}
 
 	/**
 	 * @AdminRequired
 	 *
-	 * @param string|null $registered_user_group all newly registered user will be put in this group
 	 * @param string $allowed_domains Registrations are only allowed for E-Mailadresses with these domains
 	 * @param string $additional_hint show Text at user-creation form
 	 * @param string $email_verification_hint if filled embed Text in Verification mail send to user
@@ -49,8 +44,7 @@ class SettingsController extends Controller {
 	 * @param bool|null $show_domains should the email list be shown to the user or not
 	 * @return DataResponse
 	 */
-	public function admin(?string $registered_user_group,
-		string $allowed_domains,
+	public function admin(string $allowed_domains,
 		string $additional_hint,
 		string $email_verification_hint,
 		string $username_policy_regex,
@@ -136,32 +130,11 @@ class SettingsController extends Controller {
 		}
 		$this->config->setAppValue($this->appName, 'mailcow_quota', $mailcow_quota ?: '1024');
 
-		if ($registered_user_group === null) {
-			$this->config->deleteAppValue($this->appName, 'registered_user_group');
-			return new DataResponse([
-				'data' => [
-					'message' => $this->l10n->t('Saved'),
-				],
-				'status' => 'success',
-			]);
-		}
-
-		$group = $this->groupmanager->get($registered_user_group);
-		if ($group instanceof IGroup) {
-			$this->config->setAppValue($this->appName, 'registered_user_group', $registered_user_group);
-			return new DataResponse([
-				'data' => [
-					'message' => $this->l10n->t('Saved'),
-				],
-				'status' => 'success',
-			]);
-		}
-
 		return new DataResponse([
 			'data' => [
-				'message' => $this->l10n->t('No such group'),
+				'message' => $this->l10n->t('Saved'),
 			],
-			'status' => 'error',
-		], Http::STATUS_NOT_FOUND);
+			'status' => 'success',
+		]);
 	}
 }
