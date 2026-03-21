@@ -181,6 +181,18 @@ class RegistrationService {
 			throw new RegistrationException($this->l10n->t('Please provide a valid login name.'));
 		}
 
+		if (preg_match('/[A-Z]/', $username)) {
+			throw new RegistrationException($this->l10n->t('The login name must not contain uppercase letters.'));
+		}
+
+		if (preg_match('/\s/', $username)) {
+			throw new RegistrationException($this->l10n->t('The login name must not contain spaces.'));
+		}
+
+		if (str_ends_with($username, '.')) {
+			throw new RegistrationException($this->l10n->t('The login name must not end with a dot.'));
+		}
+
 		$regex = $this->config->getAppValue($this->appName, 'username_policy_regex', '');
 		if ($regex && preg_match($regex, $username) === 0) {
 			throw new RegistrationException($this->l10n->t('Please provide a valid login name.'));

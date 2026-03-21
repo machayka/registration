@@ -21,6 +21,10 @@
 					<ShieldCheck :size="20" />
 				</NcTextField>
 
+				<p class="spam-hint">
+					{{ t('registration', 'If you have not received the code, please check your spam folder.') }}
+				</p>
+
 				<input type="hidden" name="requesttoken" :value="requesttoken">
 				<NcButton
 					id="submit"
@@ -64,6 +68,12 @@ fieldset {
 	display: flex;
 	flex-direction: column;
 	gap: .5rem;
+}
+
+.spam-hint {
+	color: var(--color-text-maxcontrast);
+	font-size: small;
+	margin: 0;
 }
 
 .button-vue--vue-tertiary {
