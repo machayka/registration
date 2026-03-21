@@ -11,7 +11,6 @@ SPDX-FileCopyrightText: Evan You
 SPDX-FileCopyrightText: GitHub Inc.
 SPDX-FileCopyrightText: Matt Zabriskie
 SPDX-FileCopyrightText: Nextcloud GmbH and Nextcloud contributors
-SPDX-FileCopyrightText: debounce developers
 SPDX-FileCopyrightText: escape-html developers
 
 This file is generated from multiple sources. Included packages:
@@ -32,9 +31,6 @@ This file is generated from multiple sources. Included packages:
 	- license: GPL-3.0-or-later
 - @nextcloud/l10n
 	- version: 3.4.1
-	- license: GPL-3.0-or-later
-- @nextcloud/logger
-	- version: 3.0.3
 	- license: GPL-3.0-or-later
 - @nextcloud/router
 	- version: 3.1.0
@@ -59,9 +55,6 @@ This file is generated from multiple sources. Included packages:
 	- license: MIT
 - axios
 	- version: 1.13.5
-	- license: MIT
-- debounce
-	- version: 3.0.0
 	- license: MIT
 - dompurify
 	- version: 3.3.2

@@ -9,6 +9,8 @@
 return [
 	'routes' => [
 		['name' => 'settings#admin', 'url' => '/settings', 'verb' => 'POST'],
+		['name' => 'group#create', 'url' => '/group/create', 'verb' => 'POST'],
+		['name' => 'group#leave', 'url' => '/group/leave', 'verb' => 'POST'],
 		['name' => 'register#showEmailForm', 'url' => '/', 'verb' => 'GET'],
 		['name' => 'register#submitEmailForm', 'url' => '/', 'verb' => 'POST'],
 		['name' => 'register#showEmailFormWithGroup', 'url' => '/group/{groupId}', 'verb' => 'GET'],

@@ -107,6 +107,20 @@ OC.L10N.register(
     "The link has expired." : "Link wygasł.",
     "User not found." : "Nie znaleziono użytkownika.",
     "Failed to set password. Please try again." : "Nie udało się ustawić hasła. Spróbuj ponownie.",
-    "Password has been changed. You can now log in." : "Hasło zostało zmienione. Możesz się teraz zalogować."
+    "Password has been changed. You can now log in." : "Hasło zostało zmienione. Możesz się teraz zalogować.",
+    "Your group" : "Twoja grupa",
+    "Share your registration link to let others sign up and join your group automatically." : "Udostępnij swój link rejestracyjny, aby inni mogli się zarejestrować i automatycznie dołączyć do Twojej grupy.",
+    "You belong to the group \"{group}\"." : "Należysz do grupy \"{group}\".",
+    "Registration link" : "Link rejestracyjny",
+    "You cannot delete this group because it has members." : "Nie możesz usunąć tej grupy, ponieważ ma członków.",
+    "Delete group" : "Usuń grupę",
+    "Leave group" : "Opuść grupę",
+    "You cannot create your own group while you belong to \"{group}\"." : "Nie możesz stworzyć własnej grupy, dopóki należysz do \"{group}\".",
+    "Group \"{group}\" has been created." : "Grupa \"{group}\" została utworzona.",
+    "Group name" : "Nazwa grupy",
+    "Copy" : "Kopiuj",
+    "Copied!" : "Skopiowano!",
+    "An error occurred while creating the group." : "Wystąpił błąd podczas tworzenia grupy.",
+    "An error occurred while leaving the group." : "Wystąpił błąd podczas opuszczania grupy."
 },
 "nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);");

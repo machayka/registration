@@ -8,6 +8,7 @@ export default createAppConfig({
 	// entry points: {name: script}
 	form: 'src/form.ts',
 	settings: 'src/settings.ts',
+	personal: 'src/personal.ts',
 }, {
 	extractLicenseInformation: {
 		includeSourceMaps: true,
