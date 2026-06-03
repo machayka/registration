@@ -300,12 +300,22 @@ class RegisterController extends Controller {
 
 		$response = new TemplateResponse('registration', 'form/user', [], 'guest');
 
-		if ($this->loginFlowService->isUsingLoginFlow(1)) {
-			$csp = new ContentSecurityPolicy();
-			$csp->addAllowedFormActionDomain('nc://*');
-			$response->setContentSecurityPolicy($csp);
+		$csp = new ContentSecurityPolicy();
+
+		$redirectUrl = $registration->getRedirectUrl();
+		if (!empty($redirectUrl) && filter_var($redirectUrl, FILTER_VALIDATE_URL)) {
+			$scheme = parse_url($redirectUrl, PHP_URL_SCHEME);
+			$host = parse_url($redirectUrl, PHP_URL_HOST);
+			if ($scheme && $host) {
+				$csp->addAllowedFormActionDomain($scheme . '://' . $host);
+			}
 		}
 
+		if ($this->loginFlowService->isUsingLoginFlow(1)) {
+			$csp->addAllowedFormActionDomain('nc://*');
+		}
+
+		$response->setContentSecurityPolicy($csp);
 		return $response;
 	}
 
