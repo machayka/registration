@@ -29,6 +29,8 @@ use OCP\AppFramework\Db\Entity;
  * @method void setRequested(string $requested)
  * @method string|null getGroupId()
  * @method void setGroupId(?string $groupId)
+ * @method string getRedirectUrl()
+ * @method void setRedirectUrl(string $redirectUrl)
  */
 class Registration extends Entity {
 	public $id;
@@ -41,6 +43,7 @@ class Registration extends Entity {
 	protected $emailConfirmed;
 	protected $clientSecret;
 	protected $groupId;
+	protected $redirectUrl;
 
 	public function __construct() {
 		$this->addType('email', 'string');
@@ -52,5 +55,6 @@ class Registration extends Entity {
 		$this->addType('clientSecret', 'string');
 		$this->addType('requested', 'datetime');
 		$this->addType('groupId', 'string');
+		$this->addType('redirectUrl', 'string');
 	}
 }

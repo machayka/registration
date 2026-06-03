@@ -24,6 +24,7 @@
 				<div id="terms_of_service" />
 
 				<input type="hidden" name="requesttoken" :value="requesttoken">
+				<input type="hidden" name="redirect_url" :value="redirectUrl">
 				<NcButton
 					id="submit"
 					type="submit"
@@ -59,6 +60,7 @@ const requesttoken = getRequestToken()
 const disableEmailVerification = loadState<boolean>('registration', 'disableEmailVerification')
 const isLoginFlow = loadState<boolean>('registration', 'isLoginFlow')
 const loginFormLink = loadState<string>('registration', 'loginFormLink')
+const redirectUrl = loadState<string>('registration', 'redirectUrl')
 
 const emailLabel = computed(() => {
 	return emailIsOptional

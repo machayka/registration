@@ -76,7 +76,7 @@ class RegistrationService {
 	/**
 	 * Create registration request, used by both the API and form
 	 */
-	public function createRegistration(string $email, string $username = '', string $password = '', string $displayname = '', ?string $groupId = null): Registration {
+	public function createRegistration(string $email, string $username = '', string $password = '', string $displayname = '', ?string $groupId = null, string $redirectUrl = ''): Registration {
 		$registration = new Registration();
 		$registration->setEmail($email);
 		$registration->setUsername($username);
@@ -85,6 +85,9 @@ class RegistrationService {
 		if ($password !== '') {
 			$password = $this->crypto->encrypt($password);
 			$registration->setPassword($password);
+		}
+		if ($redirectUrl !== '') {
+			$registration->setRedirectUrl($redirectUrl);
 		}
 		$this->registrationMapper->generateNewToken($registration);
 		$this->registrationMapper->generateClientSecret($registration);

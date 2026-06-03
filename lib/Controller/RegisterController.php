@@ -83,7 +83,7 @@ class RegisterController extends Controller {
 	 * @NoCSRFRequired
 	 * @PublicPage
 	 */
-	public function showEmailForm(string $email = '', string $message = ''): TemplateResponse {
+	public function showEmailForm(string $email = '', string $message = '', string $redirect_url = ''): TemplateResponse {
 		$emailHint = '';
 		$domainList = $this->registrationService->getAllowedDomains();
 		if (!empty($domainList) && $this->config->getAppValue(Application::APP_ID, 'show_domains', 'no') === 'yes') {
@@ -109,6 +109,7 @@ class RegisterController extends Controller {
 		$this->initialState->provideInitialState('disableEmailVerification', $this->config->getAppValue($this->appName, 'disable_email_verification', 'no') === 'yes');
 		$this->initialState->provideInitialState('isLoginFlow', $this->loginFlowService->isUsingLoginFlow());
 		$this->initialState->provideInitialState('loginFormLink', $this->urlGenerator->linkToRoute('core.login.showLoginForm'));
+		$this->initialState->provideInitialState('redirectUrl', $redirect_url);
 		return new TemplateResponse('registration', 'form/email', [], 'guest');
 	}
 
@@ -142,14 +143,14 @@ class RegisterController extends Controller {
 	public function submitEmailFormWithGroup(string $groupId, string $email): Response {
 		$group = $this->groupManager->get($groupId);
 		$validGroupId = $group !== null ? $groupId : null;
-		return $this->submitEmailForm($email, $validGroupId);
+		return $this->submitEmailForm($email, '', $validGroupId);
 	}
 
 	/**
 	 * @PublicPage
 	 * @AnonRateThrottle(limit=5, period=300)
 	 */
-	public function submitEmailForm(string $email, ?string $groupId = null): Response {
+	public function submitEmailForm(string $email, string $redirect_url = '', ?string $groupId = null): Response {
 		$validateFormEvent = new ValidateFormEvent(ValidateFormEvent::STEP_EMAIL);
 		$this->eventDispatcher->dispatchTyped($validateFormEvent);
 
@@ -168,10 +169,10 @@ class RegisterController extends Controller {
 				$email = trim($email);
 				$this->registrationService->validateEmail($email);
 			} catch (RegistrationException $e) {
-				return $this->showEmailForm($email, $e->getMessage());
+				return $this->showEmailForm($email, $e->getMessage(), $redirect_url);
 			}
 
-			$registration = $this->registrationService->createRegistration($email, '', '', '', $groupId);
+			$registration = $this->registrationService->createRegistration($email, '', '', '', $groupId, $redirect_url);
 		}
 
 		if ($this->config->getAppValue($this->appName, 'disable_email_verification', 'no') === 'yes') {
@@ -361,6 +362,11 @@ class RegisterController extends Controller {
 				if ($response instanceof Response && $response->getStatus() === Http::STATUS_SEE_OTHER) {
 					return $response;
 				}
+			}
+
+			$redirectUrl = $registration->getRedirectUrl();
+			if (!empty($redirectUrl) && filter_var($redirectUrl, FILTER_VALIDATE_URL)) {
+				return new RedirectResponse($redirectUrl);
 			}
 
 			return new RedirectResponse($this->urlGenerator->linkToDefaultPageUrl());
