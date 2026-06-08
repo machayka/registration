@@ -10,6 +10,7 @@ namespace OCA\Registration;
 
 use OCP\Authentication\IAlternativeLogin;
 use OCP\IL10N;
+use OCP\IRequest;
 use OCP\IURLGenerator;
 
 class RegistrationLoginOption implements IAlternativeLogin {
@@ -18,6 +19,7 @@ class RegistrationLoginOption implements IAlternativeLogin {
 		protected IURLGenerator $url,
 		protected IL10N $l,
 		protected \OC_Defaults $theming,
+		protected IRequest $request,
 	) {
 	}
 
@@ -26,7 +28,18 @@ class RegistrationLoginOption implements IAlternativeLogin {
 	}
 
 	public function getLink(): string {
-		return $this->url->linkToRoute('registration.register.showEmailForm');
+		$params = [];
+
+		$loginRedirectUrl = $this->request->getParam('redirect_url', '');
+		if (!empty($loginRedirectUrl)) {
+			// Convert relative path to absolute URL so filter_var(FILTER_VALIDATE_URL) passes in submitUserForm
+			if (str_starts_with($loginRedirectUrl, '/')) {
+				$loginRedirectUrl = rtrim($this->url->getAbsoluteURL('/'), '/') . $loginRedirectUrl;
+			}
+			$params['redirect_url'] = $loginRedirectUrl;
+		}
+
+		return $this->url->linkToRoute('registration.register.showEmailForm', $params);
 	}
 
 	public function getClass(): string {
