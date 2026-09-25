@@ -89,7 +89,7 @@
 				<NcCheckboxRadioSwitch
 					v-model="newsletter"
 					type="checkbox">
-					{{ t('registration', 'Chcę otrzymywać informacje o nowościach najmuje.eu') }}
+					{{ t('registration', 'I want to receive news from najmuje.eu') }}
 				</NcCheckboxRadioSwitch>
 				<input type="hidden" name="newsletter" :value="newsletter ? '1' : '0'">
 

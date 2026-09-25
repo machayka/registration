@@ -94,6 +94,7 @@ OC.L10N.register(
     "Your new email is:" : "Twój nowy e-mail to:",
     "I accept the" : "Akceptuję",
     "terms of service" : "regulamin serwisu",
+    "I want to receive news from najmuje.eu" : "Chcę otrzymywać informacje o nowościach najmuje.eu",
     "Account recovery" : "Odzyskiwanie konta",
     "Login" : "Login",
     "Next" : "Dalej",
