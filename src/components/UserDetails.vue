@@ -86,6 +86,13 @@
 					{{ t('registration', 'I accept the') }} <a href="https://wy.najmuje.eu/baza-wiedzy/regulamin.html" target="_blank" class="tos-link">{{ t('registration', 'terms of service') }}</a>
 				</NcCheckboxRadioSwitch>
 
+				<NcCheckboxRadioSwitch
+					v-model="newsletter"
+					type="checkbox">
+					{{ t('registration', 'Chcę otrzymywać informacje o nowościach najmuje.eu') }}
+				</NcCheckboxRadioSwitch>
+				<input type="hidden" name="newsletter" :value="newsletter ? '1' : '0'">
+
 				<NcButton
 					id="submit"
 					type="submit"
@@ -130,6 +137,7 @@ const mailcowDomain = loadState<string>('registration', 'mailcowDomain')
 const requesttoken = getRequestToken()
 const submitting = ref(false)
 const tosAccepted = ref(false)
+const newsletter = ref(loadState<boolean>('registration', 'newsletter', false))
 
 function toLogin(name: string): string {
 	return name

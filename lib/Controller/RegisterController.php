@@ -20,6 +20,7 @@ use OCA\Registration\Events\ValidateFormEvent;
 use OCA\Registration\Service\LoginFlowService;
 use OCA\Registration\Service\MailcowService;
 use OCA\Registration\Service\MailService;
+use OCA\Registration\Service\NewsletterService;
 use OCA\Registration\Service\RegistrationException;
 use OCA\Registration\Service\RegistrationService;
 use OCP\AppFramework\Controller;
@@ -47,6 +48,7 @@ class RegisterController extends Controller {
 	private RegistrationService $registrationService;
 	private MailService $mailService;
 	private MailcowService $mailcowService;
+	private NewsletterService $newsletterService;
 	private LoginFlowService $loginFlowService;
 	private IEventDispatcher $eventDispatcher;
 	private IInitialState $initialState;
@@ -62,6 +64,7 @@ class RegisterController extends Controller {
 		LoginFlowService $loginFlowService,
 		MailService $mailService,
 		MailcowService $mailcowService,
+		NewsletterService $newsletterService,
 		IEventDispatcher $eventDispatcher,
 		IInitialState $initialState,
 		IGroupManager $groupManager,
@@ -74,6 +77,7 @@ class RegisterController extends Controller {
 		$this->loginFlowService = $loginFlowService;
 		$this->mailService = $mailService;
 		$this->mailcowService = $mailcowService;
+		$this->newsletterService = $newsletterService;
 		$this->eventDispatcher = $eventDispatcher;
 		$this->initialState = $initialState;
 		$this->groupManager = $groupManager;
@@ -271,7 +275,7 @@ class RegisterController extends Controller {
 	 * @NoCSRFRequired
 	 * @PublicPage
 	 */
-	public function showUserForm(string $secret, string $token, string $loginname = '', string $fullname = '', string $phone = '', string $password = '', string $message = ''): TemplateResponse {
+	public function showUserForm(string $secret, string $token, string $loginname = '', string $fullname = '', string $phone = '', string $password = '', string $message = '', string $newsletter = '0'): TemplateResponse {
 		try {
 			$registration = $this->validateSecretAndToken($secret, $token);
 		} catch (RegistrationException $e) {
@@ -294,6 +298,7 @@ class RegisterController extends Controller {
 		$this->initialState->provideInitialState('enforcePhone', $this->config->getAppValue('registration', 'enforce_phone', 'no') === 'yes');
 		$this->initialState->provideInitialState('message', $message);
 		$this->initialState->provideInitialState('password', $password);
+		$this->initialState->provideInitialState('newsletter', $newsletter === '1');
 		$this->initialState->provideInitialState('additionalHint', $additional_hint);
 		$this->initialState->provideInitialState('loginFormLink', $this->urlGenerator->linkToRoute('core.login.showLoginForm'));
 		$this->initialState->provideInitialState('mailcowDomain', $this->mailcowService->getMailcowDomain());
@@ -326,7 +331,7 @@ class RegisterController extends Controller {
 	 *
 	 * @return RedirectResponse|TemplateResponse
 	 */
-	public function submitUserForm(string $secret, string $token, string $loginname, string $fullname, string $phone, string $password): Response {
+	public function submitUserForm(string $secret, string $token, string $loginname, string $fullname, string $phone, string $password, string $newsletter = '0'): Response {
 		try {
 			$registration = $this->validateSecretAndToken($secret, $token);
 		} catch (RegistrationException $e) {
@@ -341,15 +346,20 @@ class RegisterController extends Controller {
 		$this->eventDispatcher->dispatchTyped($validateFormEvent);
 
 		if (!empty($validateFormEvent->getErrors())) {
-			return $this->showUserForm($secret, $token, $loginname, $fullname, $phone, $password, implode(' ', $validateFormEvent->getErrors()));
+			return $this->showUserForm($secret, $token, $loginname, $fullname, $phone, $password, implode(' ', $validateFormEvent->getErrors()), $newsletter);
 		}
 
 		try {
 			$user = $this->registrationService->createAccount($registration, $loginname, $fullname, $phone, $password);
 		} catch (HintException $exception) {
-			return $this->showUserForm($secret, $token, $loginname, $fullname, $phone, $password, $exception->getHint());
+			return $this->showUserForm($secret, $token, $loginname, $fullname, $phone, $password, $exception->getHint(), $newsletter);
 		} catch (Exception $exception) {
-			return $this->showUserForm($secret, $token, $loginname, $fullname, $phone, $password, $exception->getMessage());
+			return $this->showUserForm($secret, $token, $loginname, $fullname, $phone, $password, $exception->getMessage(), $newsletter);
+		}
+
+		// Newsletter gets the recovery email (entered in step 1), not the platform address
+		if ($newsletter === '1' && $registration->getEmail() !== '') {
+			$this->newsletterService->subscribe($registration->getEmail());
 		}
 
 		// Delete registration
