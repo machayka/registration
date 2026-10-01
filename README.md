@@ -26,6 +26,17 @@ git clone https://github.com/machayka/registration.git
 php /var/www/html/occ app:enable registration
 ```
 
+## 🔄 Aktualizacja
+
+```bash
+docker exec -it nextcloud-aio-nextcloud bash
+cd /var/www/html/custom_apps/registration
+git pull
+su -s /bin/sh www-data -c "php /var/www/html/occ upgrade"
+```
+
+Po aktualizacji odśwież stronę z pominięciem cache (Cmd+Shift+R).
+
 ## ✨ Features
 
 * 🔔 Administrator will be notified via email for new user creation or require approval
