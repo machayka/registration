@@ -9,6 +9,7 @@ export default createAppConfig({
 	form: 'src/form.ts',
 	settings: 'src/settings.ts',
 	personal: 'src/personal.ts',
+	login: 'src/login.ts',
 }, {
 	extractLicenseInformation: {
 		includeSourceMaps: true,

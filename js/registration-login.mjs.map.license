@@ -1,0 +1,7 @@
+SPDX-License-Identifier: AGPL-3.0-or-later
+SPDX-FileCopyrightText: registration developers
+
+This file is generated from multiple sources. Included packages:
+- registration
+	- version: 2.9.0
+	- license: AGPL-3.0-or-later

@@ -48,5 +48,6 @@ class RegistrationLoginOption implements IAlternativeLogin {
 
 	public function load(): void {
 		\OCP\Util::addStyle('registration', 'registration-login');
+		\OCP\Util::addScript('registration', 'registration-login');
 	}
 }
